@@ -6,8 +6,22 @@ const App = () => {
 
   const [questions, setQuestions] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [difficulty, setDifficulty] = useState("easy");
+  const [length, setLength] = useState("10");
   
-  const API_BASE_URL = "https://opentdb.com/api.php?amount=10";
+  const API_BASE_URL = "https://opentdb.com/api.php?amount=";
+
+  const difficulties = [
+    { value: "easy", label: "Easy" },
+    { value: "medium", label: "Medium" },
+    { value: "hard", label: "Hard" }
+  ]
+
+  const lengths = [
+    { value: "10", label: "Short" },
+    { value: "20", label: "Medium" },
+    { value: "30", label: "Long" }
+  ]
 
   const API_OPTIONS = {
     method: "GET",
@@ -17,6 +31,8 @@ const App = () => {
   }
 
   const fetchQuestions = async () => {
+    
+    setSelectedAnswers({});
     try{  
       // Getting the session token
       const SESSION_TOKEN_LINK = "https://opentdb.com/api_token.php?command=request";
@@ -30,7 +46,7 @@ const App = () => {
       const sessionTokenData = await sessionToken.json();
 
       // Getting the questions
-      const endpoint = `${API_BASE_URL}&token=${sessionTokenData.token}&difficulty=easy`;
+      const endpoint = `${API_BASE_URL}${length}&token=${sessionTokenData.token}&difficulty=${difficulty}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -41,8 +57,6 @@ const App = () => {
       const data = await response.json();
 
       setQuestions(data.results);
-
-      console.log(data);
     }
     catch(error){
       console.error(`Failed to fetch questions: ${error}`);
@@ -53,12 +67,24 @@ const App = () => {
     fetchQuestions();
   }, [])
 
+  useEffect(() => {
+    fetchQuestions();
+  }, [difficulty])
+
   const handleAnswerClick = (questionIndex, answer) => {
     setSelectedAnswers(prev => ({
       ...prev,
       [questionIndex]: answer
     }));
     console.log(`Selected: ${answer}`);
+  }
+
+  const handleDifficultyChange = (e) => {
+    setDifficulty(e.target.value);
+  }
+
+  const handleNewQuiz = () => {
+    fetchQuestions();
   }
 
   const decodeHtml = (html) => {
@@ -69,6 +95,19 @@ const App = () => {
   
   return (
     <div>
+     <h2>Quiz settings</h2>
+
+     <div>
+      <label htmlFor="difficulty">Difficulty: </label>
+      <select id="difficulty" value={difficulty} onChange={handleDifficultyChange}>
+        {difficulties.map(diff => (
+          <option key={diff.value} value={diff.value}>
+            {diff.label}
+          </option>
+        ))}
+      </select>
+     </div>
+     <button onClick={handleNewQuiz}>New quiz</button>
       {questions.map((question, index) => (
         <div key={index} className="border-[1px] border-gray-300 text-center max-w-[500px] ml-auto mr-auto mb-[15px] rounded-[20px] mt-[10px] p-[10px]">
           <h3>{decodeHtml(question.question)}</h3>
@@ -98,7 +137,7 @@ const App = () => {
             }
           </div>
           {selectedAnswers.hasOwnProperty(index) && (
-            <p><strong>Correct Answer:</strong> {question.correct_answer}</p>
+            <p><strong>Correct Answer:</strong> {decodeHtml(question.correct_answer)}</p>
           )}
         </div>
       ))}
