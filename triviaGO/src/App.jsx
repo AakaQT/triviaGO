@@ -71,6 +71,10 @@ const App = () => {
     fetchQuestions();
   }, [difficulty])
 
+  useEffect(() => {
+    fetchQuestions();
+  }, [length])
+
   const handleAnswerClick = (questionIndex, answer) => {
     setSelectedAnswers(prev => ({
       ...prev,
@@ -87,6 +91,10 @@ const App = () => {
     fetchQuestions();
   }
 
+  const handleLengthChange = (e) => {
+    setLength(e.target.value);
+  }
+
   const decodeHtml = (html) => {
     const txt = document.createElement("textarea");
     txt.innerHTML = html;
@@ -95,19 +103,31 @@ const App = () => {
   
   return (
     <div>
-     <h2>Quiz settings</h2>
+    <div className="sticky top-0">
+      <h2>Quiz settings</h2>
 
-     <div>
-      <label htmlFor="difficulty">Difficulty: </label>
-      <select id="difficulty" value={difficulty} onChange={handleDifficultyChange}>
-        {difficulties.map(diff => (
-          <option key={diff.value} value={diff.value}>
-            {diff.label}
-          </option>
-        ))}
-      </select>
-     </div>
-     <button onClick={handleNewQuiz}>New quiz</button>
+      <div>
+        <label htmlFor="difficulty">Difficulty: </label>
+        <select id="difficulty" value={difficulty} onChange={handleDifficultyChange}>
+          {difficulties.map(diff => (
+            <option key={diff.value} value={diff.value}>
+              {diff.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="length">Length: </label>
+        <select id="length" value={length} onChange={handleLengthChange}>
+          {lengths.map(len => (
+            <option key={len.value} value={len.value}>
+              {len.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <button onClick={handleNewQuiz}>New quiz</button>
+    </div>
       {questions.map((question, index) => (
         <div key={index} className="border-[1px] border-gray-300 text-center max-w-[500px] ml-auto mr-auto mb-[15px] rounded-[20px] mt-[10px] p-[10px]">
           <h3>{decodeHtml(question.question)}</h3>
