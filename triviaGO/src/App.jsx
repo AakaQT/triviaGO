@@ -72,7 +72,7 @@ const App = () => {
       {questions.map((question, index) => (
         <div key={index} className="border-[1px] border-gray-300 text-center max-w-[500px] ml-auto mr-auto mb-[15px] rounded-[20px] mt-[10px] p-[10px]">
           <h3>{decodeHtml(question.question)}</h3>
-          <ul>
+          <div>
             {[...question.incorrect_answers, question.correct_answer]
             .sort(() => Math.random() - 0.5)
             .map((answer, answerIndex) => {
@@ -80,6 +80,7 @@ const App = () => {
               const isAnswered = selectedAnswers.hasOwnProperty(index);
 
               return(
+                <>
                 <button key={answerIndex} className="border-[1px] border-gray-300 mb-[10px] max-w-[400px] ml-auto mr-auto rounded-[20px] mt-[10px] block min-w-[300px]" style={{
                   cursor: isAnswered ? "not-allowed" : "pointer",
                   opacity: isAnswered && !isSelected ? 0.4 : 1,
@@ -91,10 +92,14 @@ const App = () => {
                 >
                   {decodeHtml(answer)}
                 </button>
-              )
+                </>
+              );
             })
             }
-          </ul>
+          </div>
+          {selectedAnswers.hasOwnProperty(index) && (
+            <p><strong>Correct Answer:</strong> {question.correct_answer}</p>
+          )}
         </div>
       ))}
     </div>
