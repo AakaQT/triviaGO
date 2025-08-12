@@ -83,6 +83,14 @@ const App = () => {
     console.log(`Selected: ${answer}`);
   }
 
+  const totalQuestions = questions.length;
+  const answeredQuestions = Object.keys(selectedAnswers).length;
+  const correctAnswers = Object.keys(selectedAnswers).filter(
+    questionIndex => selectedAnswers[questionIndex] === questions[questionIndex]?.correct_answer
+  ).length;
+  const isQuizComplete = answeredQuestions === totalQuestions && totalQuestions > 0;
+  const percentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+
   const handleDifficultyChange = (e) => {
     setDifficulty(e.target.value);
   }
@@ -126,7 +134,7 @@ const App = () => {
           ))}
         </select>
       </div>
-      <button onClick={handleNewQuiz}>New quiz</button>
+      <button onClick={handleNewQuiz} className="cursor-pointer">New quiz</button>
     </div>
       {questions.map((question, index) => (
         <div key={index} className="border-[1px] border-gray-300 text-center max-w-[500px] ml-auto mr-auto mb-[15px] rounded-[20px] mt-[10px] p-[10px]">
@@ -138,6 +146,10 @@ const App = () => {
               const isSelected = selectedAnswers[index] === answer;
               const isAnswered = selectedAnswers.hasOwnProperty(index);
 
+            const addAnsweredQuestions = () => {
+              setAnsweredQuestions(answeredQuestions + 1);
+            }
+
               return(
                 <>
                 <button key={answerIndex} className="border-[1px] border-gray-300 mb-[10px] max-w-[400px] ml-auto mr-auto rounded-[20px] mt-[10px] block min-w-[300px]" style={{
@@ -147,7 +159,9 @@ const App = () => {
                   color: isSelected ? 'white' : 'black'
                 }}
                 disabled={isAnswered}
-                onClick={() => handleAnswerClick(index, answer)}
+                onClick={() => {
+                  handleAnswerClick(index, answer);
+                }}
                 >
                   {decodeHtml(answer)}
                 </button>
@@ -161,6 +175,38 @@ const App = () => {
           )}
         </div>
       ))}
+
+      {isQuizComplete && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-[300px] border-[1px] border-gray-300 text-center ">
+          <h2>Quiz Complete!</h2>
+
+          <div>
+            <div>
+              <h3>Score</h3>
+              <p>{percentage}%</p>
+            </div>
+
+            <div>
+              <h3>Correct Answers</h3>
+              <p>{correctAnswers} / {totalQuestions}</p>
+            </div>
+          </div>
+
+          <div>
+            {percentage >= 90 && <p>Excellent Work!</p>}
+            {percentage >= 70 && percentage < 90 && <p>Great job!</p>}
+            {percentage >= 50 && percentage < 70 && <p>Not bad!</p>}
+            {percentage < 50 && <p>Keep practicing!</p>}
+          </div>
+          <button className="border-[1px] border-gray-300 w-[150px] h-[50px] mt-[10px] rounded-[10px] cursor-pointer" onClick={handleNewQuiz}>New Quiz</button>
+        </div>
+      )}
+
+      {!isQuizComplete && totalQuestions > 0 && (
+        <div>
+          Progress: {answeredQuestions / {totalQuestions}}
+        </div>
+      )}
     </div>
   )
 }
