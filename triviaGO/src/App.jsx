@@ -9,6 +9,7 @@ const App = () => {
   const [difficulty, setDifficulty] = useState("easy");
   const [length, setLength] = useState("10");
   const [category, setCategory] = useState("");
+  const [sessionToken, setSessionToken] = useState("");
   
   const API_BASE_URL = "https://opentdb.com/api.php?amount=";
 
@@ -45,23 +46,36 @@ const App = () => {
     }
   }
 
-  const fetchQuestions = async () => {
-    
-    setSelectedAnswers({});
-    try{  
-      // Getting the session token
+  const fetchSessionToken = async () => {
+    try{
       const SESSION_TOKEN_LINK = "https://opentdb.com/api_token.php?command=request";
 
-      const sessionToken = await fetch(SESSION_TOKEN_LINK, API_OPTIONS);
+      const response = await fetch(SESSION_TOKEN_LINK, API_OPTIONS);
 
-      if(!sessionToken.ok){
+      if(!response.ok){
         throw new Error("Failed fetching Session Token");
       }
 
-      const sessionTokenData = await sessionToken.json();
+      const data = await response.json();
 
+      setSessionToken(data.token);
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchSessionToken();
+  }, [])
+
+  const fetchQuestions = async () => {
+    
+    setSelectedAnswers({});
+    try{
       // Getting the questions
-      const endpoint = `${API_BASE_URL}${length}&token=${sessionTokenData.token}&difficulty=${difficulty}&category=${category}`;
+      console.log(sessionToken);
+      const endpoint = `${API_BASE_URL}${length}&token=${sessionToken}&difficulty=${difficulty}&category=${category}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -80,7 +94,7 @@ const App = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, [])
+  }, [sessionToken])
 
   useEffect(() => {
     fetchQuestions();
