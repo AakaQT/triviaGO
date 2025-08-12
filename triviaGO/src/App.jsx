@@ -8,6 +8,7 @@ const App = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [difficulty, setDifficulty] = useState("easy");
   const [length, setLength] = useState("10");
+  const [category, setCategory] = useState("");
   
   const API_BASE_URL = "https://opentdb.com/api.php?amount=";
 
@@ -21,6 +22,20 @@ const App = () => {
     { value: "10", label: "Short" },
     { value: "20", label: "Medium" },
     { value: "30", label: "Long" }
+  ]
+
+  const categories = [
+    { value: "", label: "Any category" },
+    { value: "9", label: "General Knowledge" },
+    { value: "10", label: "Entertainment: Books" },
+    { value: "11", label: "Entertainment: Film" },
+    { value: "12", label: "Entertainment: Music" },
+    { value: "17", label: "Science & Nature" },
+    { value: "18", label: "Science: Computers" },
+    { value: "19", label: "Science: Mathematics" },
+    { value: "21", label: "Sports" },
+    { value: "22", label: "Geography" },
+    { value: "23", label: "History" }
   ]
 
   const API_OPTIONS = {
@@ -46,7 +61,7 @@ const App = () => {
       const sessionTokenData = await sessionToken.json();
 
       // Getting the questions
-      const endpoint = `${API_BASE_URL}${length}&token=${sessionTokenData.token}&difficulty=${difficulty}`;
+      const endpoint = `${API_BASE_URL}${length}&token=${sessionTokenData.token}&difficulty=${difficulty}&category=${category}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -74,6 +89,10 @@ const App = () => {
   useEffect(() => {
     fetchQuestions();
   }, [length])
+  
+  useEffect(() => {
+    fetchQuestions();
+  }, [category])
 
   const handleAnswerClick = (questionIndex, answer) => {
     setSelectedAnswers(prev => ({
@@ -103,6 +122,10 @@ const App = () => {
     setLength(e.target.value);
   }
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  }
+
   const decodeHtml = (html) => {
     const txt = document.createElement("textarea");
     txt.innerHTML = html;
@@ -111,7 +134,7 @@ const App = () => {
   
   return (
     <div>
-    <div className="sticky top-0">
+    <div className="sticky top-0 bg-gray-100 border-[1px] border-gray-300">
       <h2>Quiz settings</h2>
 
       <div>
@@ -134,6 +157,16 @@ const App = () => {
           ))}
         </select>
       </div>
+      <div>
+        <label htmlFor="category">Category: </label>
+        <select id="category" value={category} onChange={handleCategoryChange}>
+          {categories.map(cat => (
+            <option key={cat.value} value={cat.value}>
+              {cat.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <button onClick={handleNewQuiz} className="cursor-pointer">New quiz</button>
     </div>
       {questions.map((question, index) => (
@@ -145,10 +178,6 @@ const App = () => {
             .map((answer, answerIndex) => {
               const isSelected = selectedAnswers[index] === answer;
               const isAnswered = selectedAnswers.hasOwnProperty(index);
-
-            const addAnsweredQuestions = () => {
-              setAnsweredQuestions(answeredQuestions + 1);
-            }
 
               return(
                 <>
