@@ -74,7 +74,6 @@ const App = () => {
     setSelectedAnswers({});
     try{
       // Getting the questions
-      console.log(sessionToken);
       const endpoint = `${API_BASE_URL}${length}&token=${sessionToken}&difficulty=${difficulty}&category=${category}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
@@ -113,7 +112,6 @@ const App = () => {
       ...prev,
       [questionIndex]: answer
     }));
-    console.log(`Selected: ${answer}`);
   }
 
   const totalQuestions = questions.length;
