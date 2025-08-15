@@ -31,12 +31,19 @@ const App = () => {
     { value: "10", label: "Entertainment: Books" },
     { value: "11", label: "Entertainment: Film" },
     { value: "12", label: "Entertainment: Music" },
+    { value: "15", label: "Entertainment: Video Games" },
+    { value: "14", label: "Entertainment: Television" },
+    { value: "31", label: "Entertainment: Japanese Anime & Manga" },
     { value: "17", label: "Science & Nature" },
     { value: "18", label: "Science: Computers" },
     { value: "19", label: "Science: Mathematics" },
     { value: "21", label: "Sports" },
     { value: "22", label: "Geography" },
-    { value: "23", label: "History" }
+    { value: "23", label: "History" },
+    { value: "26", label: "Celebrities" },
+    { value: "27", label: "Animals" },
+    { value: "28", label: "Vehicles" },
+
   ]
 
   const API_OPTIONS = {
